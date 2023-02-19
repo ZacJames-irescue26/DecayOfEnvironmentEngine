@@ -14,7 +14,7 @@
 #include <unordered_set>
 
 #include "Engine/Core/Log.h"
-
+#include "Engine/Core/Core.h"
 #ifdef HZ_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif

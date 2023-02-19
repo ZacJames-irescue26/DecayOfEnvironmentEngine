@@ -1,6 +1,12 @@
 #include "DOE_Engine.h"
+
+#include "imgui/imgui.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Platform/OpenGL/OpenGLShader.h"
 
 class ExampleLayer : public DOE_Engine::Layer
 {
@@ -97,7 +103,7 @@ public:
 
 		)";
 
-		m_Shader.reset(new DOE_Engine::Shader(vertexSrc, fragmentSrc));
+		m_Shader.reset(DOE_Engine::Shader::Create(vertexSrc, fragmentSrc));
 
 
 		std::string BlueShaderVertexSrc = R"(
@@ -124,14 +130,15 @@ public:
 			layout(location = 0) out vec4 color;
 
 			in vec3 v_Position;
+			uniform vec3 u_Color;
 			void main()
 			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
+				color = vec4(u_Color, 1.0);
 			}
 
 		)";
 
-		m_BlueShader.reset(new DOE_Engine::Shader(BlueShaderVertexSrc, BlueShaderFragmentSrc2));
+		m_BlueShader.reset(DOE_Engine::Shader::Create(BlueShaderVertexSrc, BlueShaderFragmentSrc2));
 	}
 
 	void OnUpdate(DOE_Engine::Timestep ts) override
@@ -161,6 +168,10 @@ public:
 
 		DOE_Engine::Renderer::BeginScene(m_Camera);
 
+
+		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(m_BlueShader)->Bind();
+		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(m_BlueShader)->UploadUniformFloat3("u_Color", m_FlatColor );
+
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0,1.0,0.0});
 
 		DOE_Engine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
@@ -168,6 +179,15 @@ public:
 
 		DOE_Engine::Renderer::EndScene();
 	}
+
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Square color", glm::value_ptr(m_FlatColor));
+
+		ImGui::End();
+	}
+
 	void OnEvent(DOE_Engine::Event& event) override
 	{
 		
@@ -183,6 +203,8 @@ private:
 	DOE_Engine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
 	float m_CameraSpeed = 1.0;
+
+	glm::vec3 m_FlatColor = { 0.2, 0.3, 0.8 };
 };
 
 class Sandbox : public DOE_Engine::Application
