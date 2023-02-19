@@ -45,7 +45,6 @@ namespace DOE_Engine
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
-		m_Data.VSync = enabled;
 	}
 
 	bool WindowsWindow::IsVSync() const

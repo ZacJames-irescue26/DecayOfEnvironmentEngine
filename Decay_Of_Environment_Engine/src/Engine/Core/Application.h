@@ -4,12 +4,8 @@
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Core/LayerStack.h"
 #include "Engine/ImGui/ImGuiLayer.h"
-#include "Engine/Renderer/Shader.h"
-#include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/VertexArray.h"
 
 #include "Window.h"
-#include "../Renderer/OrthographicCamera.h"
 
 namespace DOE_Engine
 {
@@ -33,6 +29,8 @@ namespace DOE_Engine
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		LayerStack m_LayerStack;
+
+		float m_LastFrameTime = 0.0f;
 
 		static Application* s_Instance;
 

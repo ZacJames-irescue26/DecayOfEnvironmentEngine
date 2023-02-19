@@ -3,8 +3,8 @@
 #include "Engine/Core/Application.h"
 
 #include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
+#include "examples/imgui_impl_opengl3.h"
+#include "examples/imgui_impl_glfw.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -61,11 +61,11 @@ namespace DOE_Engine
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		// find out why imgui wont link properly
-		if (io.ConfigFlags /*& ImGuiConfigFlags_ViewportsEnable*/)
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			/*ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();*/
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
 

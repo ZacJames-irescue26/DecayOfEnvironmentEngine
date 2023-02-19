@@ -1,5 +1,6 @@
 #include "DOE_Engine.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 class ExampleLayer : public DOE_Engine::Layer
 {
@@ -68,6 +69,8 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+			
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -75,7 +78,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform *  vec4(a_Position, 1.0);
 			}
 
 		)";
@@ -102,12 +105,15 @@ public:
 
 			layout(location = 0) in vec3 a_Position;
 			out vec3 v_Position;
+
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 
 		)";
@@ -128,23 +134,25 @@ public:
 		m_BlueShader.reset(new DOE_Engine::Shader(BlueShaderVertexSrc, BlueShaderFragmentSrc2));
 	}
 
-	void OnUpdate() override
+	void OnUpdate(DOE_Engine::Timestep ts) override
 	{
+		DOE_TRACE("DeltaTime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMiliSeconds());
+
 		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::A))
 		{
-			m_CameraPosition.x -= m_CameraSpeed;
+			m_CameraPosition.x -= m_CameraSpeed * ts;
 		}
 		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::D))
 		{
-			m_CameraPosition.x += m_CameraSpeed;
+			m_CameraPosition.x += m_CameraSpeed * ts;
 		}
 		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::S))
 		{
-			m_CameraPosition.y -= m_CameraSpeed;
+			m_CameraPosition.y -= m_CameraSpeed * ts;
 		}
 		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::W))
 		{
-			m_CameraPosition.y += m_CameraSpeed;
+			m_CameraPosition.y += m_CameraSpeed * ts;
 		}
 		DOE_Engine::RenderCommand::SetClearColor({ 0.1, 0.1, 0.1, 1.0 });
 		DOE_Engine::RenderCommand::Clear();
@@ -153,7 +161,9 @@ public:
 
 		DOE_Engine::Renderer::BeginScene(m_Camera);
 
-		DOE_Engine::Renderer::Submit(m_BlueShader, m_SquareVA);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), {1.0,1.0,0.0});
+
+		DOE_Engine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 		DOE_Engine::Renderer::Submit(m_Shader, m_VertexArray);
 
 		DOE_Engine::Renderer::EndScene();
@@ -172,7 +182,7 @@ private:
 
 	DOE_Engine::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
-	float m_CameraSpeed = 0.1;
+	float m_CameraSpeed = 1.0;
 };
 
 class Sandbox : public DOE_Engine::Application
