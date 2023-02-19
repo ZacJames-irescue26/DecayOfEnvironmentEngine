@@ -10,6 +10,11 @@ namespace DOE_Engine
 		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 
+	void Renderer::Init()
+	{
+		RenderCommand::Init();
+	}
+
 	void Renderer::EndScene()
 	{
 

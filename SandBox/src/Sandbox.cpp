@@ -191,7 +191,7 @@ public:
 
 	void OnUpdate(DOE_Engine::Timestep ts) override
 	{
-		DOE_TRACE("DeltaTime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMiliSeconds());
+		//DOE_TRACE("DeltaTime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMiliSeconds());
 
 		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::A))
 		{
