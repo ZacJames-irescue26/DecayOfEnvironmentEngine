@@ -18,4 +18,15 @@ namespace DOE_Engine
 
 	}
 
+	Shader* Shader::Create(const std::string& filepath)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::None: DOE_CORE_ASSERT(false, "RendererAPI::None is not supported"); return nullptr;
+		case RendererAPI::API::OpenGL: return new OpenGLShader(filepath);
+		}
+		DOE_CORE_ASSERT(false, "Unknown RendererAPI");
+		return nullptr;
+	}
+
 }
