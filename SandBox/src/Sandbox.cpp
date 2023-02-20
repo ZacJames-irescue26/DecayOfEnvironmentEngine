@@ -105,7 +105,7 @@ public:
 
 		)";
 
-		m_Shader.reset(DOE_Engine::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = DOE_Engine::Shader::Create("ColorTriangle", vertexSrc, fragmentSrc);
 
 
 		std::string BlueShaderVertexSrc = R"(
@@ -126,7 +126,7 @@ public:
 
 		)";
 
-		std::string BlueShaderFragmentSrc2 = R"(
+		std::string BlueShaderFragmentSrc = R"(
 			#version 450 core
 
 			layout(location = 0) out vec4 color;
@@ -140,14 +140,14 @@ public:
 
 		)";
 		
-		m_BlueShader.reset(DOE_Engine::Shader::Create(BlueShaderVertexSrc, BlueShaderFragmentSrc2));		
+		m_BlueShader = DOE_Engine::Shader::Create("FlatColor", BlueShaderVertexSrc, BlueShaderFragmentSrc);
 
-		m_TextureShader.reset(DOE_Engine::Shader::Create("Assets/Shaders/Texture.glsl"));
+		auto textureShader = m_ShaderLibrary.Load("Assets/Shaders/Texture.glsl");
 
 		m_Texture = DOE_Engine::Texture2D::Create("Assets/Textures/space.png");
 
-		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(DOE_Engine::Timestep ts) override
@@ -185,10 +185,17 @@ public:
 
 		DOE_Engine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 
+		auto textureShader = m_ShaderLibrary.Get("Texture");
 		m_Texture->Bind(0);
+		DOE_Engine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5)));
 
-		DOE_Engine::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5)));
+		/*for (int x = 0; x < 10; x++)
+		{
+			for (int y = 0; y < 10; y++)
+			{
 
+			}
+		}*/
 		// Triangle
 		//DOE_Engine::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -208,6 +215,9 @@ public:
 		
 	}
 private:
+
+	DOE_Engine::ShaderLibrary m_ShaderLibrary;
+
 	DOE_Engine::Ref<DOE_Engine::Shader> m_Shader;
 
 	DOE_Engine::Ref<DOE_Engine::VertexArray> m_VertexArray;

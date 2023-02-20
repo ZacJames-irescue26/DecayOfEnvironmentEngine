@@ -12,8 +12,8 @@
 #endif*/ 
 
 #ifdef DOE_ENABLE_ASSERTS
-#define DOE_ASSERT(x, ...) {if(!(x)) { HZ_ERROR("Asserttion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-#define DOE_ASSERT(x, ...) {if(!(x)) { HZ_CORE_ERROR("Asserttion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#define DOE_ASSERT(x, ...) {if(!(x)) { DOE_ERROR("Asserttion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#define DOE_ASSERT(x, ...) {if(!(x)) { DOE_CORE_ERROR("Asserttion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 
 #else
 #define DOE_ASSERT(x, ...)

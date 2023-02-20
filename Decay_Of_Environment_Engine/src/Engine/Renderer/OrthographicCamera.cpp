@@ -29,9 +29,9 @@ namespace DOE_Engine {
 			glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation), glm::vec3(0, 0, 1));
 
 		m_ViewMatrix = glm::inverse(transform);
-		/*m_ViewMatrix = glm::lookAt( glm::vec3(-100, 100, 100),
+		/*m_ViewMatrix = transform * glm::lookAt( glm::vec3(1,1,-1),
 			glm::vec3(0,0, 0),
-			glm::vec3(0,1,0));*/
+			glm::vec3(0,0 ,1));*/
 
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
