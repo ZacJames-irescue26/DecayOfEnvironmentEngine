@@ -1,9 +1,12 @@
+#pragma once
+
 #include "Event.h"
 #include "Engine/Core/MouseCodes.h"
 #include <string>
 #include <sstream>
 
-namespace DOE_Engine {
+namespace DOE_Engine
+{
 	
 	class MouseMovedEvent : public Event
 	{

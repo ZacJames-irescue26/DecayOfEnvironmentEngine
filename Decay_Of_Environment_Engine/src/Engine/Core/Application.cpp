@@ -40,6 +40,8 @@ namespace DOE_Engine
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+
 		//DOE_CORE_TRACE("{0}", e);
 		
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -70,10 +72,12 @@ namespace DOE_Engine
 			float time = (float)glfwGetTime();
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
-
-			for (Layer* layer : m_LayerStack)
+			if (!m_Minimized)
 			{
-				layer->OnUpdate(timestep);
+				for (Layer* layer : m_LayerStack)
+				{
+					layer->OnUpdate(timestep);
+				}
 			}
 			m_ImGuiLayer->Begin();
 			for(Layer* layer : m_LayerStack)
@@ -89,5 +93,19 @@ namespace DOE_Engine
 		m_Running = false;
 		return true;
 	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+		{
+			m_Minimized = true;
+		}
+		m_Minimized = false;
+
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+		return false;
+	}
+
 }
 

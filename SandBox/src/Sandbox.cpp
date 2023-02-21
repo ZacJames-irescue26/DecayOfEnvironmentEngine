@@ -12,7 +12,7 @@ class ExampleLayer : public DOE_Engine::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.0, 1.0, -1.0, 1.0)
+		: Layer("Example"), m_CameraController(1280.0f / 720.0f)
 	{
 		DOE_Engine::Ref<DOE_Engine::VertexBuffer> m_VertexBuffer;
 		DOE_Engine::Ref<DOE_Engine::IndexBuffer> m_IndexBuffer;
@@ -153,29 +153,13 @@ public:
 	void OnUpdate(DOE_Engine::Timestep ts) override
 	{
 		//DOE_TRACE("DeltaTime: {0}s ({1}ms)", ts.GetSeconds(), ts.GetMiliSeconds());
-
-		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::A))
-		{
-			m_CameraPosition.x -= m_CameraSpeed * ts;
-		}
-		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::D))
-		{
-			m_CameraPosition.x += m_CameraSpeed * ts;
-		}
-		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::S))
-		{
-			m_CameraPosition.y -= m_CameraSpeed * ts;
-		}
-		if (DOE_Engine::Input::IsKeyPressed(DOE_Engine::Key::W))
-		{
-			m_CameraPosition.y += m_CameraSpeed * ts;
-		}
+		m_CameraController.OnUpdate(ts);
+		
 		DOE_Engine::RenderCommand::SetClearColor({ 0.1, 0.1, 0.1, 1.0 });
 		DOE_Engine::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
 
-		DOE_Engine::Renderer::BeginScene(m_Camera);
+		DOE_Engine::Renderer::BeginScene(m_CameraController.GetCamera());
 
 
 		std::dynamic_pointer_cast<DOE_Engine::OpenGLShader>(m_BlueShader)->Bind();
@@ -210,9 +194,15 @@ public:
 		ImGui::End();
 	}
 
-	void OnEvent(DOE_Engine::Event& event) override
+	void OnEvent(DOE_Engine::Event& e) override
 	{
-		
+		m_CameraController.OnEvent(e);
+		/*if (e.GetEventType() == DOE_Engine::EventType::WindowResize)
+		{
+			auto& re = (DOE_Engine::WindowResizeEvent&)e;
+			float zoom = (float)re.GetWidth();
+			m_CameraController.SetZoomLevel()
+		}*/
 	}
 private:
 
@@ -228,7 +218,7 @@ private:
 	DOE_Engine::Ref<DOE_Engine::Shader> m_TextureShader;
 	DOE_Engine::Ref<DOE_Engine::Texture2D> m_Texture;
 
-	DOE_Engine::OrthographicCamera m_Camera;
+	DOE_Engine::OrthographicCameraController m_CameraController;
 	glm::vec3 m_CameraPosition;
 	float m_CameraSpeed = 1.0;
 
